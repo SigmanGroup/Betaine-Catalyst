@@ -20,4 +20,6 @@ dependencies:
   - nbformat
   - rdkit
   - anywidget
-
+  - pip
+  - pip:
+      - git+https://github.com/scikit-learn-contrib/boruta_py.git@3c9eac3bdcc9d7cce0c01cd866b33f5c2eae98d4

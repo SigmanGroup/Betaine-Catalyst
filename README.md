@@ -11,8 +11,8 @@ It is organized as follows:
 | --- | --- | --- |
 | `dataset.xlsx` | Experimental data workbook. `comb-matrix` contains the main catalyst-substrate matrix; `N-substitution` contains the N-substitution comparison set. | Open the workbook when checking source experimental values. |
 | `betaine_env.yml` | Conda environment for the local Python notebooks and helper scripts. | `conda env create -f betaine_env.yml` |
-| `descriptor_generation/` | Molecule lists, Gaussian log files, compact descriptor tables, and descriptor-combination scripts. | `descriptor_generation/ReadMe` |
-| `catalyst-substrate-modeling/` | Main LASSO modeling notebook, prepared feature CSVs, virtual-screening input, and saved model outputs. | `catalyst-substrate-modeling/README.md` |
+| `descriptor_generation/` | Molecule lists, Gaussian log files, compact descriptor tables, and descriptor-combination scripts. | `descriptor_generation/README.md` |
+| `catalyst-substrate-modeling/` | Main LASSO modeling, feature-stability and y-randomization analyses, baseline-model comparisons, prepared feature CSVs, and virtual-screening workflow. | `catalyst-substrate-modeling/README.md` |
 | `catalyst-only-modeling/` | Catalyst-only feature workbook and one saved parity plot from the upstream SigmanGroup modeling workflow. | `catalyst-only-modeling/README.md` |
 | `DFT_reaction-mechanism/` | Optimized structures, reaction-state energies, transition-state conformer searches, kinetic simulation notebook, and DFT support scripts. | See the folder notes below. |
 
@@ -21,8 +21,9 @@ It is organized as follows:
 1. All experimental outcomes are listed in `dataset.xlsx`.
 2. Molecular descriptors are prepared under `descriptor_generation/`.
 3. Combined descriptor matrices are used by the modeling folders:
-   - `catalyst-substrate-modeling/` for the main catalyst-substrate LASSO and
-     virtual-screening analysis.
+   - `catalyst-substrate-modeling/` for the main catalyst-substrate LASSO,
+     validation, model-comparison, y-randomization, and virtual-screening
+     analyses.
    - `catalyst-only-modeling/` for the catalyst-only model input and exported
      result plot.
 4. DFT reaction-mechanism and kinetic-analysis materials are stored under
@@ -37,7 +38,7 @@ tables used to build model-ready feature matrices.
 
 Important files and folders:
 
-- `descriptor_generation/README`: detailed guide for the descriptor folder.
+- `descriptor_generation/README.md`: detailed guide for the descriptor folder.
 - `descriptor_generation/comb_input_template.xlsx`: combined reaction template
   with catalyst, substrate, `ddG`, and descriptor columns.
 - `descriptor_generation/fill_paramters.py`: fills descriptor columns in a
@@ -63,19 +64,27 @@ template matters.
 
 ## Catalyst-Substrate Modeling
 
-`catalyst-substrate-modeling/` contains the main notebook workflow:
+`catalyst-substrate-modeling/` contains the main and supporting modeling
+workflows:
 
 - `lasso_regression.ipynb`: sequential LASSO modeling, validation,
-  y-randomization, virtual-screening, and PCA analysis notebook.
+  fixed-feature y-randomization, nested feature-stability analysis,
+  virtual-screening, and PCA analysis notebook.
+- `baseline_validation/model_comparison.ipynb`: comparison of categorical
+  Ridge, descriptor-space k-NN, linear- and interaction-feature LASSO, and
+  Elastic Net under k-fold, LOCO, LOSO, and double-cold-start validation.
+- `sisso_y_randomization/`: fold-local SISSO/Boruta feature generation and
+  nested LASSO y-randomization workflow.
 - `linear_features/`: base linear feature train/test CSVs.
 - `linear_plus_steric_interaction_features/`: interaction-feature train/test
-  CSVs and saved result figures/tables.
+  CSVs and code for generating result figures/tables, including the
+  feature-stability analysis.
 - `sisso_features/`: SISSO feature train/test CSVs.
 - `out-of-sample-catalysts/`: out-of-sample catalyst panel.
 - `virtual-screening/`: default virtual-screening input set and saved outputs.
 
-The notebook is sequential; run cells from top to bottom. The current detailed
-run configuration and expected outputs are documented in
+The main LASSO notebook is sequential; run cells from top to bottom. The
+current detailed run configuration and expected outputs are documented in
 `catalyst-substrate-modeling/README.md`.
 
 ## Catalyst-Only Modeling
@@ -122,6 +131,8 @@ conda activate betaine_env
 The environment includes Python 3.11, Jupyter kernel support, pandas, NumPy,
 scikit-learn, SciPy, matplotlib, seaborn, openpyxl, RDKit, DBSTEP, morfeus-ml,
 SHAP, Plotly, and notebook-rendering support packages.
+The environment also installs the Boruta implementation used by the fold-local
+SISSO y-randomization workflow from a fixed source revision.
 
 External tools are still required for some workflows:
 
@@ -150,5 +161,7 @@ their own licenses.
 - Several notebooks are sequential and reuse variables from earlier cells.
 - Rerunning notebooks or helper scripts can overwrite plots, workbooks, and
   result summaries in the active output folder.
+- Generated modeling `results/` directories are retained locally but ignored
+  by Git.
 - This repository documents the current on-disk handoff state; it does not
   imply that all scientific computations were freshly rerun end-to-end.

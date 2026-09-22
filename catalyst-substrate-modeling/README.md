@@ -1,16 +1,24 @@
-# Catalyst-Substrate LASSO Modeling
+# Catalyst-Substrate Modeling
 
-This folder contains the notebook workflow and prepared feature tables for
-catalyst-substrate LASSO modeling.
+This folder contains the main LASSO workflow, supporting validation analyses,
+and prepared feature tables for catalyst-substrate modeling.
 
-## Main Notebook
+## Main Notebooks And Workflows
 
-Use `lasso_regression.ipynb`.
+- `lasso_regression.ipynb`: main LASSO analysis, fixed-feature
+  y-randomization, nested feature-stability analysis, external-test
+  predictions, virtual screening, and PCA.
+- `baseline_validation/model_comparison.ipynb`: categorical Ridge,
+  descriptor-space k-NN, linear- and interaction-feature LASSO, and Elastic
+  Net evaluated under identical k-fold, LOCO, LOSO, and double-cold-start
+  splits.
+- `sisso_y_randomization/`: local fold-specific SISSO/Boruta plus nested LASSO
+  y-randomization workflow. See its README for execution details.
 
-The notebook is organized as a sequential analysis workflow. Run cells from top
-to bottom because later sections reuse variables created earlier, especially
-`df`, `X`, `y`, `feature_names`, `scaler`, `output_folder`, and fitted model
-objects.
+The main notebook is organized as a sequential analysis workflow. Run cells
+from top to bottom because later sections reuse variables created earlier,
+especially `df`, `X`, `y`, `feature_names`, `scaler`, `output_folder`, and
+fitted model objects.
 
 ## How To Run
 
@@ -23,10 +31,13 @@ cd catalyst-substrate-modeling
 jupyter lab lasso_regression.ipynb
 ```
 
-The notebook metadata currently uses the `modeling` kernel with Python 3.11.
-Core Python packages used by the notebook include `pandas`, `numpy`,
-`matplotlib`, `scikit-learn`, `seaborn`, `plotly`, and `openpyxl` for updating
-Excel workbooks.
+For the baseline-model comparison, open
+`baseline_validation/model_comparison.ipynb` and run it from top to bottom.
+
+The notebooks were authored with a local `modeling` kernel. In a clean
+installation, select the published `betaine_env` Python 3.11 kernel instead.
+Core Python packages used by the notebooks include `pandas`, `numpy`,
+`matplotlib`, `scikit-learn`, `seaborn`, `plotly`, `boruta`, and `openpyxl`.
 
 ## Default Run Configuration
 
@@ -71,7 +82,9 @@ The notebook includes:
 - leave-one-group-out setup and LOGO LASSO validation
 - final LOGO test-only parity plot and workbook export
 - full-training-set LassoCV and fixed-alpha LASSO fits
-- y-randomization checks for LassoCV and fixed-alpha models
+- nested fixed-feature y-randomization with fold-local scaling, 1-SE alpha
+  selection, OOF evaluation, null distributions, and empirical significance
+- repeated nested-CV feature-selection and coefficient-stability analysis
 - highlighted catalyst/substrate ranking plots
 - external-test prediction plots
 - retraining on train + external-test data for virtual screening
@@ -81,8 +94,9 @@ The notebook includes:
 ## Run Order Notes
 
 Run the LOGO setup cell before the LOGO LASSO cell. Run the full LassoCV cell
-before the LassoCV y-randomization test. Run the fixed-alpha refit cell before
-the fixed-alpha y-randomization test.
+before the nested y-randomization and feature-stability sections because they
+reuse its alpha grid. Run the fixed-alpha refit before comparing the nested
+stability results with the final fitted model.
 
 For virtual screening, run the train + external-test retraining cell before the
 prediction cell. The prediction summary plot reads all
@@ -98,6 +112,12 @@ fitted steric and electronic scalers are available.
 Most generated files are written under the active `output_folder`. 
 Existing output filenames are reused by design, so rerunning cells can
 overwrite previous files in the selected results folder.
+
+Baseline-comparison outputs are written below `baseline_validation/results/`.
+Feature-stability outputs are written below
+`linear_plus_steric_interaction_features/results/feature_stability/`.
+Generated `results/` directories are ignored by Git and remain local unless
+they are deliberately copied elsewhere.
 
 ## Reproducibility
 
