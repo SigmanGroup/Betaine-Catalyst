@@ -89,13 +89,3 @@ available for inspecting completed checkpoints. For example:
 ```bash
 tail -f results/runs/observed/fold_01/sisso.log
 ```
-
-## Methodological boundary
-
-SISSO/Boruta is fitted independently in every outer-training fold. The selected
-representation for that outer fold is then held fixed during its inner LASSO
-alpha search. Thus, the outer OOF observations cannot influence feature
-generation or selection. This implementation does not rerun SISSO/Boruta a
-second time inside every inner alpha-selection fold; the LASSO alpha search is
-conditional on the representation selected from the complete outer-training
-partition.
